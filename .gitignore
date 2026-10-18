@@ -1,0 +1,15 @@
+.local/
+__pycache__/
+*.pyc
+*.apk
+*.xapk
+*.apks
+*.bin
+*.jar
+*.class
+*.zip
+*.log
+local.properties
+.idea/
+.gradle/
+build/

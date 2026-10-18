@@ -1,0 +1,95 @@
+[
+  {
+    "package": "com.royalenfield.reprime",
+    "version_code": "193",
+    "version_name": "10.1.23(45)",
+    "min_sdk": "31",
+    "target_sdk": "36",
+    "components": [
+      {
+        "name": "com.royalenfield.reprime.ui.home.navigation.service.REForeGroundService",
+        "kind": "service",
+        "declared_enabled": null,
+        "declared_exported": "false",
+        "declared_permission": null,
+        "actions": []
+      }
+    ],
+    "scope": "Manifest declarations only; runtime component overrides and feature flags are unknown."
+  },
+  {
+    "package": "com.google.android.projection.gearhead",
+    "version_code": "178663874",
+    "version_name": "17.8.663874-release",
+    "min_sdk": "32",
+    "target_sdk": "37",
+    "components": [
+      {
+        "name": "com.google.android.apps.auto.carservice.gmscorecompat.FirstActivityImpl",
+        "kind": "activity",
+        "declared_enabled": "false",
+        "declared_exported": "true",
+        "declared_permission": null,
+        "actions": [
+          "android.hardware.usb.action.USB_ACCESSORY_ATTACHED",
+          "android.intent.action.MAIN",
+          "com.google.android.gms.car.usb.USB_ACCESSORY_FORCE_START",
+          "com.google.android.gms.carsetup.START_DUPLEX"
+        ]
+      },
+      {
+        "name": "com.google.android.apps.auto.wireless.bluetooth.WifiBluetoothReceiver",
+        "kind": "receiver",
+        "declared_enabled": "true",
+        "declared_exported": "true",
+        "declared_permission": null,
+        "actions": [
+          "android.bluetooth.a2dp.profile.action.CONNECTION_STATE_CHANGED",
+          "android.bluetooth.device.action.ACL_CONNECTED",
+          "android.bluetooth.headset.profile.action.CONNECTION_STATE_CHANGED",
+          "android.intent.action.BOOT_COMPLETED",
+          "android.intent.action.MY_PACKAGE_REPLACED",
+          "com.google.android.projection.gearhead.START_WIRELESS_PROJECTION",
+          "com.google.android.projection.gearhead.START_WIRELESS_PROJECTION_WPP"
+        ]
+      },
+      {
+        "name": "com.google.android.apps.auto.wireless.deeplink.DeepLinkResolver",
+        "kind": "activity",
+        "declared_enabled": null,
+        "declared_exported": "true",
+        "declared_permission": null,
+        "actions": [
+          "android.intent.action.VIEW"
+        ]
+      },
+      {
+        "name": "com.google.android.apps.auto.wireless.setup.receiver.WirelessStartupReceiver",
+        "kind": "receiver",
+        "declared_enabled": "false",
+        "declared_exported": "true",
+        "declared_permission": null,
+        "actions": [
+          "com.google.android.apps.auto.wireless.setup.receiver.wirelessstartup.START"
+        ]
+      },
+      {
+        "name": "com.google.android.apps.auto.wireless.setup.service.impl.WirelessSetupSharedService",
+        "kind": "service",
+        "declared_enabled": "true",
+        "declared_exported": "true",
+        "declared_permission": null,
+        "actions": []
+      },
+      {
+        "name": "com.google.android.apps.auto.wireless.setup.service.impl.WirelessStartupActivity",
+        "kind": "activity",
+        "declared_enabled": null,
+        "declared_exported": "false",
+        "declared_permission": null,
+        "actions": []
+      }
+    ],
+    "scope": "Manifest declarations only; runtime component overrides and feature flags are unknown."
+  }
+]

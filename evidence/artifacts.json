@@ -1,0 +1,72 @@
+{
+  "investigation_date": "2026-10-19",
+  "analysis_kind": "static_only",
+  "apk_execution_performed": false,
+  "phone_runtime_test_performed": false,
+  "bike_test_performed": false,
+  "firmware_image_acquired": false,
+  "artifacts": [
+    {
+      "package": "com.royalenfield.reprime",
+      "version_name": "10.1.23(45)",
+      "version_code": 193,
+      "variant": "arm64-v8a XAPK; base APK inspected",
+      "min_sdk": 31,
+      "target_sdk": 36,
+      "listing_url": "https://apkpure.net/royal-enfield-app/com.royalenfield.reprime/download",
+      "retrieval_url": "https://d.apkpure.net/b/XAPK/com.royalenfield.reprime?version=latest",
+      "base_filename": "com.royalenfield.reprime.apk",
+      "base_size_bytes": 113115511,
+      "base_sha256": "d08478e8c564624503b440834a40499cd4acdc1c8572e49fe1b4830472ad37a4",
+      "signature_integrity_verified": true,
+      "signature_scheme_v3_verified": true,
+      "signer_certificate_sha256": "8d624c6e4768b6b619ddd97f8d3216f94a7ad923e7d35af332ae0a0f6540f1cf"
+    },
+    {
+      "package": "com.google.android.projection.gearhead",
+      "version_name": "17.8.663874-release",
+      "version_code": 178663874,
+      "variant": "arm64-v8a XAPK; base APK inspected",
+      "min_sdk": 32,
+      "target_sdk": 37,
+      "listing_url": "https://apkpure.net/android-auto/com.google.android.projection.gearhead/download",
+      "retrieval_url": "https://d.apkpure.net/b/XAPK/com.google.android.projection.gearhead?version=latest",
+      "base_filename": "com.google.android.projection.gearhead.apk",
+      "base_sha256": "4924df923f66b1574e2de65e2bc7f743d2b00a38954da78cc806bea10b0aa992",
+      "signature_integrity_verified": true,
+      "signature_scheme_v3_verified": true,
+      "signer_certificate_sha256": "1ca8dcc0bed3cbd872d2cb791200c0292ca9975768a82d676b8b424fb65b5295"
+    }
+  ],
+  "provenance_limitations": [
+    "Retrieved from a third-party APK mirror, not directly from Google Play or the publisher.",
+    "APK signature integrity was verified with apksig 8.9.2, but signer identity was not independently matched to a trusted publisher distribution.",
+    "Latest URLs are mutable. Compare exact base SHA-256 digests before applying version-specific symbol findings.",
+    "ABI and resource splits were not decompiled. Firmware identification was limited; no firmware image was disassembled.",
+    "Compiled manifest defaults and flag defaults do not determine a real device's effective component state or server-delivered flags."
+  ],
+  "tools": [
+    {
+      "name": "jadx-headless-mcp",
+      "version": "0.7.1",
+      "embedded_jadx_version": "1.5.6",
+      "url": "https://github.com/1013503897/jadx-headless-mcp/releases/download/v0.7.1/jadx-headless-mcp-0.7.1-all.jar",
+      "sha256": "6e5eacf500b64292bfb73c49797c1958f6ee44646e43e868039ae7feb573ff75",
+      "selection_basis": "REA src/android/JadxRelease.ts at pinned REA revision",
+      "usage": "Targeted Java helper calling the embedded JADX API; raw outputs retained locally."
+    },
+    {
+      "name": "Android apksig",
+      "version": "8.9.2",
+      "url": "https://dl.google.com/dl/android/maven2/com/android/tools/build/apksig/8.9.2/apksig-8.9.2.jar",
+      "sha256": "c070ed1394629d74641aa0906f60b2ffa1ee77e6366a1f93437f59717b1aeb89"
+    }
+  ],
+  "source_revisions": [
+    {"repository": "morluto/rea", "commit": "32f0e5120966be59d17a1e092353816c76a9c5e2"},
+    {"repository": "jayvadolkar/open-dash-re", "commit": "ed26faf78449a42eb9fc5934957e3e8feaa9839a"},
+    {"repository": "norbertFeron/better-dash", "commit": "e32d885372e8f18b49c3bf73c8add8692d377b5b"},
+    {"repository": "andreknieriem/open-headunit", "commit": "afe6a534811970893b7a8f745617cd84bd04a021"},
+    {"repository": "kolaCZek/TripperDashPlusPlus", "commit": "c37741ac65bfdf8061a2c75ba9f7bbfb45c3acba"}
+  ]
+}

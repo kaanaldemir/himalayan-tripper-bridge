@@ -1,0 +1,23 @@
+{
+  "date": "2026-10-19",
+  "executed": [
+    {"check": "Manifest audit unit tests", "result": "passed", "tests": 5},
+    {"check": "ApkInspector.java compilation against pinned JADX JAR", "result": "passed"},
+    {"check": "ApkVerify.java compilation against apksig 8.9.2", "result": "passed"},
+    {"check": "Both inspected base APK signatures", "result": "v3 integrity verification passed; no verifier errors"},
+    {"check": "Targeted source decompilation", "result": "selected RE and Android Auto classes emitted; some methods contain JADX warnings or missing bodies"},
+    {"check": "ApkInspector smali mode", "result": "RE NavigationFragment and bluconnect.tw6 emitted"},
+    {"check": "ApkInspector manifest mode", "result": "RE manifest emitted"},
+    {"check": "Critical RE onStop path", "result": "Java observation checked against smali; snapshot cancellation, state writes and projection-off command present"},
+    {"check": "Manifest audit on both decoded manifests", "result": "report generated in manifest-observations.json"}
+  ],
+  "not_executed": [
+    "Android Auto runtime startup or QR/WPP pairing",
+    "Server-delivered Google feature configuration",
+    "Runtime PackageManager component overrides",
+    "Locked-phone projection or thermal/power measurement",
+    "Stock bike handshake, firmware execution or packet capture",
+    "Firmware-image acquisition or disassembly",
+    "Complete Android Auto video, joystick, audio or microphone session"
+  ]
+}
