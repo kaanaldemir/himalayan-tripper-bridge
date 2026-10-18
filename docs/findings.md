@@ -6,7 +6,7 @@ The intended product is a phone-side bridge for **the phone's full Android Auto 
 
 **We have not established a complete solution under those constraints.** The dash output is understood well enough to design a bridge. Starting a full Android Auto receiver session on the same phone is the unresolved dependency. QR/WPP provisioning is a plausible research direction, not a demonstrated solution.
 
-The evidence below comes from static inspection of two downloaded APKs and pinned open-source implementations. No Android process was run, no head-unit server was enabled, no motorcycle was connected, and no firmware image was acquired or disassembled. Server-side feature configuration and runtime component overrides were not observed.
+The evidence below comes from static inspection of two downloaded APKs, pinned open-source implementations, and independent desktop packet/cryptographic probes. No Android process was run, no head-unit server was enabled, no motorcycle was connected, and no firmware image was acquired or disassembled. Server-side feature configuration and runtime component overrides were not observed. [Virtual validation](virtual-validation.md) states exactly what was executed.
 
 ## 1. What the Royal Enfield app actually does
 
@@ -48,6 +48,8 @@ See the pinned [better-dash implementation](https://github.com/norbertFeron/bett
 
 The dash does not need to understand Android Auto if the phone terminates Android Auto's receiver protocol and converts its video into the existing dash format. It still needs the proper K1G session, codec parameters, input acknowledgements, and timing.
 
+Deeper direct APK tracing corroborated more of the transport: `bluconnect.cyb.b()` sets `192.168.1.1:5000`; `a78` implements RTP with a 90 kHz clock, a 1358-byte single-NAL threshold and 1358-byte FU-A data chunks (1372 bytes including RTP/FU headers). `omf.j()` encrypts UTF-8 SSID bytes concatenated with the session key using the supplied RSA modulus/exponent; `omf.m()` generates a 32-byte AES key and `omf.h()` selects RSA/ECB/PKCS1Padding. Parameter-set aggregation also exists in the packetizer, but its use in this app pipeline has not been established. The independent reconstruction implements single-NAL and FU-A framing, not a byte-for-byte copy of all encoder behavior.
+
 **Ordinary pairing is not zero interaction:** Royal Enfield's [official pairing instructions](https://www.royalenfield.com/in/en/tripper-dash/) require generating the dash SSID with the joystick. better-dash also documents Digital mode and enabling the existing Wi-Fi function. We have not established a way to remove those requirements on every stock firmware. No claim of “zero bike configuration” beyond normal pairing is justified yet.
 
 ## 3. Why existing Android Auto self-mode is insufficient
@@ -58,10 +60,14 @@ The dash does not need to understand Android Auto if the phone terminates Androi
 | --- | --- | --- |
 | `WirelessStartupActivity` | `exported=false` | A normal third-party app cannot simply launch this activity as legacy self-mode code did. |
 | `WirelessStartupReceiver` | `enabled=false`, `exported=true` | Being exported does not make a disabled receiver callable. Its method can forward host/port to the private activity, but the disabled declaration blocks relying on that entry point by default. |
-| `FirstActivityImpl` | `enabled=false`, `exported=true` | Another declared-disabled entry point is not a reliable public launch API. |
+| `FirstActivityImpl` | `enabled=false`, `exported=true`; `ComponentInitReceiver` enables it for ordinary R+ profiles | The manifest default alone does **not** block this route. Internal caller validation is the important gate. |
 | `WifiBluetoothReceiver` | Enabled and exported | Triggers the ordinary wireless device flow, not a generic public “project to this arbitrary socket” API. |
 
 These are **manifest defaults**, not measurements of a device's effective PackageManager state. Android Auto or another privileged component may change its own component state. That uncertainty prevents treating a static declaration as a universal runtime verdict.
+
+The deeper investigation followed the enabled activity and exported Binder services. The direct Wi-Fi activity path checks a Google-signed calling package. Restart/legacy duplex uses a callback checking the caller UID. Newer duplex uses a trusted service handshake. `WirelessSetupSharedService` checks same UID or a Google-signed allowlisted package inside its Binder methods. `GearheadCarStartupService`'s handoff delegate also checks the caller before accepting an arbitrary host and port. Its separate proxy signature-check flag defaults to false, but that does **not** remove the delegate's guard. See the version-specific [call graph and evidence](android-auto-bootstrap.md).
+
+The legacy `WirelessStartupReceiver` would forward into the internal flow if enabled. A raw DEX instruction scan found no type reference or enabling string naming it; its only string match was its own diagnostic name. This is evidence about the inspected DEX, not proof that a privileged component, native code, resource-driven code or remote/runtime configuration can never enable it. Its effective state remains unmeasured, and the startup model preserves that uncertainty.
 
 [Open Headunit's current self-launcher](https://github.com/andreknieriem/open-headunit/blob/afe6a534811970893b7a8f745617cd84bd04a021/app/src/main/java/com/andrerinas/openheadunit/connection/self/launchers/SelfLauncherV17_4.kt) connects to `127.0.0.1:5277` and asks the user to start Android Auto's developer head-unit server. Its older launcher uses internal explicit intents and reflective network objects. Its [README](https://github.com/andreknieriem/open-headunit/blob/afe6a534811970893b7a8f745617cd84bd04a021/README.md) also documents a root workaround.
 
@@ -92,15 +98,21 @@ This is more promising than launching a private activity. A candidate bridge wou
 
 Acceptance of an IP string at the resolver is **not** proof that the networking state machine, TLS handshake and session startup will accept it. A default-off flag is also **not** proof that no real user has the feature. Neither side should be overstated.
 
+Further direct tracing reached `pjg.a()`: it creates a network-bound TCP socket through `jgd.a(Network)`, dials the supplied endpoint, then wraps it with TLS in **server** mode and requires client authentication. `jdr.d()` and `sae` build the trust manager from an embedded public automotive CA. The public receiver certificate bundled by the pinned Open Headunit revision passed signature verification and the JDK's client-certificate trust check against that same public anchor. A real desktop loopback TLS 1.2 exchange with a synthetic phone-side identity and the upstream receiver credentials also passed. No Android Auto process was involved. These checks establish a workable certificate/role arrangement for a probe, not same-phone Android networking or a full WPP/AAP session.
+
+No instruction reference to `InetAddress.isLoopbackAddress()` or `isAnyLocalAddress()` was found in the inspected DEX. Strings mentioning loopback protection resolve to platform permission-flag queries in class `d`, not an identified projection endpoint rejection. These negative searches are not a guarantee that every networking layer accepts localhost.
+
 Open Headunit already has [QR provisioning code](https://github.com/andreknieriem/open-headunit/blob/afe6a534811970893b7a8f745617cd84bd04a021/app/src/main/java/com/andrerinas/openheadunit/connection/wifi/modes/nativeaa/ProjectionDeepLink.kt) and a [WPP TCP receiver](https://github.com/andreknieriem/open-headunit/blob/afe6a534811970893b7a8f745617cd84bd04a021/app/src/main/java/com/andrerinas/openheadunit/connection/wifi/modes/nativeaa/WppTcpServer.kt). Its implementation concerns separate receiver devices; that is not proof of same-phone operation. It negotiates WPP 4.2 to avoid a 4.1 manufacturer allowlist, while sending its configured identity. We should not copy certificate/trust handling or introduce impersonation as an unnoticed implementation detail.
 
 ## 5. Firmware evidence
 
 The downloaded app package did not supply an identified dash firmware image. A filename inventory found `DebugProbesKt.bin`, which is a Kotlin debugging resource, not evidence of dashboard firmware. Native split libraries were present; no firmware extraction from packed/native content was attempted.
 
-The APK contains updater code and remote metadata models. `bluconnect.tw6` is the Firestore service; its `O(...)` path reads `RE_FOTA_FULL`. Its `e0(...)` method is the `getReFotaTripper` coroutine. `bluconnect.mkf` includes fields named `firmwareMappingUrl`, `firmwareUrl`, and `firmwareVersion`. Additional DEX strings include `otap/otap/firmwaredownload`.
+The APK contains updater code and remote metadata models. `bluconnect.tw6` is the Firestore service; its `O(...)` path reads `RE_FOTA_FULL`. Its `e0(...)` method reads `RE_FOTA_TRIPPER` and decodes its first document as `bluconnect.mkf`, whose fields include `firmwareMappingUrl`, `firmwareUrl`, and `firmwareVersion`. `tw6.e()`/`m()` obtain an authenticated Firebase session using the app backend's custom-token flow. Additional DEX strings include `otap/otap/firmwaredownload`.
 
-These identify retrieval mechanisms, not an acquired firmware image. No protected service was queried using extracted app credentials, and no binary firmware version was verified. Consequently, we cannot claim that firmware has been reverse-engineered or that all dashboard variants have identical limits.
+A single unauthenticated, field-masked REST read of the `RE_FOTA_TRIPPER` collection in the app's public project `re-prime-prod` returned HTTP 403 `PERMISSION_DENIED` / “Missing or insufficient permissions.” No app key, account token or extracted credential was used, and no authentication bypass was attempted. Firebase's [REST authentication documentation](https://firebase.google.com/docs/firestore/use-rest-api) explains the relevant authenticated-request/security-rule boundary.
+
+These identify retrieval mechanisms, not an acquired firmware image. No binary firmware version was verified. Consequently, we cannot claim that firmware has been reverse-engineered or that all dashboard variants have identical limits.
 
 Firmware is not the first dependency to change: changing the dash violates the requested product constraints. The existing stock video path already supplies the output channel. The next decisive unknown is Android Auto startup on an ordinary phone.
 

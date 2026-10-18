@@ -53,6 +53,28 @@ Look for `onStop()V` in the first class. The inspected method invokes `g9()`, wr
 
 For the updater, inspect `bluconnect.tw6`, `bluconnect.uw6`, `bluconnect.mkf` and the `getReFotaTripper` coroutine. Some Java bodies are omitted, which is why the smali mode matters. Finding metadata/download code is not obtaining the firmware.
 
+## Follow callers and initialization beyond declarations
+
+The deeper Android Auto pass inspected these version-specific symbols:
+
+```powershell
+java -Xmx2g --class-path .local/tools/jadx-headless.jar tools/ApkInspector.java .local/inputs/com.google.android.projection.gearhead.apk .local/aa com.google.android.apps.auto.carservice.gmscorecompat.ComponentInitReceiver com.google.android.gms.carsetup.FirstActivityImpl slr shu shg pfs jtd jtc jnw jnu iog acur pjg jgd jdr sae pgy
+
+java -Xmx2g --class-path .local/tools/jadx-headless.jar tools/ApkInspector.java .local/inputs/com.google.android.projection.gearhead.apk .local/aa '@smali:com.google.android.apps.auto.carservice.gmscorecompat.ComponentInitReceiver' '@smali:com.google.android.gms.carsetup.FirstActivityImpl' '@smali:shu' '@smali:shg' '@smali:jtc' '@smali:jnw' '@smali:jnu' '@smali:iog' '@smali:pjg'
+```
+
+The helper can scan instruction references without decompiling every method:
+
+```powershell
+java -Xmx2g --class-path .local/tools/jadx-headless.jar tools/ApkInspector.java .local/inputs/com.google.android.projection.gearhead.apk .local/aa '@find-string:full_loopback_protections_enabled' '@find-type:WirelessStartupReceiver' '@find-call:Ljava/net/Socket;->connect' '@find-call:Landroid/content/pm/PackageManager;->setComponentEnabledSetting'
+
+java -Xmx2g --class-path .local/tools/jadx-headless.jar tools/ApkInspector.java .local/inputs/com.royalenfield.reprime.apk .local/re '@find-string:192.168.1.1' '@find-string:RSA/ECB/PKCS1Padding' bluconnect.cyb bluconnect.a78 bluconnect.omf
+```
+
+Queries are case-sensitive substring matches. Method queries use a DEX owner descriptor followed by `->` and a method name; include the full descriptor to avoid matching unrelated owners. Call queries omit argument signatures, so overloads can match together. `@find-type` scans **TYPE_REF instructions**, not every type mention in signatures, annotations, resources or strings. `@find-string` scans STRING_REF instructions, not all possible runtime string construction. Output includes the caller class, method and DEX code-unit offset; matched raw values are deliberately omitted. At most 200 sites are printed and the total count is reported. These are reference searches, not exhaustive dynamic call graphs.
+
+See [android-auto-bootstrap.md](android-auto-bootstrap.md) for the actual decision paths and [virtual-validation.md](virtual-validation.md) for the executable independent reconstruction. Keep `jdr`/`sae` outputs private, since cryptographic/configuration material can occur alongside the public certificate we compared. The public probes do not require decrypting or using any APK private key.
+
 ## Produce a small declaration report
 
 ```powershell

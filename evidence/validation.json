@@ -1,15 +1,23 @@
 {
   "date": "2026-10-19",
   "executed": [
-    {"check": "Manifest audit unit tests", "result": "passed", "tests": 5},
+    {"check": "Python unit suite: manifest (5), dash wire (7), bootstrap model (4)", "result": "passed", "tests": 16},
     {"check": "ApkInspector.java compilation against pinned JADX JAR", "result": "passed"},
     {"check": "ApkVerify.java compilation against apksig 8.9.2", "result": "passed"},
     {"check": "Both inspected base APK signatures", "result": "v3 integrity verification passed; no verifier errors"},
     {"check": "Targeted source decompilation", "result": "selected RE and Android Auto classes emitted; some methods contain JADX warnings or missing bodies"},
-    {"check": "ApkInspector smali mode", "result": "RE NavigationFragment and bluconnect.tw6 emitted"},
+    {"check": "ApkInspector smali mode", "result": "critical RE lifecycle/updater and AA initializer/caller/trust paths emitted; some Java interpretations had omitted or duplicated branches"},
     {"check": "ApkInspector manifest mode", "result": "RE manifest emitted"},
     {"check": "Critical RE onStop path", "result": "Java observation checked against smali; snapshot cancellation, state writes and projection-off command present"},
-    {"check": "Manifest audit on both decoded manifests", "result": "report generated in manifest-observations.json"}
+    {"check": "Manifest audit on both decoded manifests", "result": "report generated in manifest-observations.json"},
+    {"check": "Raw DEX instruction string/call/type reference searches", "result": "caller sites and code-unit offsets emitted; no raw matched string values printed"},
+    {"check": "Loopback UDP wire probe", "result": "passed; five RTP datagrams, maximum 1372 bytes, 6145 synthetic bytes reconstructed, two decoded-frame ACK exchanges, sequence wrap exercised", "payload_sha256": "7b4c3fdbab6f736e52db8f8dba82cfad781e7c75f76261ad591e318a1a864ff2"},
+    {"check": "Synthetic RSA payload probe", "result": "passed; independently generated RSA-1024 key, UTF-8 SSID plus 32 random session bytes, 128 ciphertext bytes; no real device key"},
+    {"check": "Public receiver certificate", "result": "signature, validity and JDK client trust passed against the public CA used by the inspected APK", "anchor_sha256": "49e52efc13ad2ed09f204c3b10698bd84bb7105f510558aa14b8119a5c4ad17f", "receiver_sha256": "e323cc6dd52d1f2a280360a0e92efa04ab3664dd68fab3dd187f03d663feed6d"},
+    {"check": "Loopback receiver TLS probe", "result": "passed TLS 1.2; synthetic TCP dialer in TLS server mode required and verified the supplied upstream receiver client certificate; synthetic echo matched; no APK private key or Android process"},
+    {"check": "Independent Java probe compilation", "result": "DashAuthProbe, ReceiverCertificateProbe and ReceiverTlsProbe compiled with JDK 21"},
+    {"check": "Static bootstrap model", "result": "default runtime gates remain unknown; hypothetical QR-off plus legacy-receiver-disabled scenario blocks all nine audited routes; no complete-session success asserted"},
+    {"check": "Unauthenticated firmware metadata read", "result": "one field-masked GET to RE_FOTA_TRIPPER returned HTTP 403 PERMISSION_DENIED; no credentials or authorization bypass used"}
   ],
   "not_executed": [
     "Android Auto runtime startup or QR/WPP pairing",

@@ -27,7 +27,9 @@ The implementation should render to private surfaces, not MediaProjection, overl
 
 The bike's stock Wi-Fi remains the dash transport. Bind **dash sockets individually** to that network. Binding the entire process to the bike's no-internet network would also redirect route, map, account and other internet requests incorrectly. Keep cellular routing available.
 
-QR/WPP is a candidate to bootstrap the sender. It must use honest device/network information and the ordinary Android Auto consent UI. No developer-server requirement, private component enabling, fake network objects, root, privileged shell, or modified sender APK may be silently introduced to make it pass.
+QR/WPP is a candidate to bootstrap the sender. It must use honest device/network information and the ordinary Android Auto consent UI. The direct activity and Binder launch paths have caller guards; Android Auto enabling its own activity does not make those paths public. See the [startup call graph](android-auto-bootstrap.md). No developer-server requirement, private component enabling, fake network objects, root, privileged shell, or modified sender APK may be silently introduced to make it pass.
+
+The WPP TCP dialer is Android Auto, but it subsequently plays TLS server and requires a client certificate. The receiver accepts TCP and plays TLS client. The desktop probes established that the pinned upstream receiver certificate/key can satisfy the reconstructed CA trust rule under the JDK and complete synthetic TLS. A product must still validate the actual sender certificate and peer, meet upstream licensing terms, and finish the Android WPP/AAP flow. A trust-all receiver is not implied by the prototype.
 
 Prove bootstrap before implementing the full receiver. An app icon, an exported component, or a successful TCP connection alone is not a full Android Auto session.
 

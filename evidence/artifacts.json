@@ -1,6 +1,6 @@
 {
   "investigation_date": "2026-10-19",
-  "analysis_kind": "static_only",
+  "analysis_kind": "static_apk_inspection_with_independent_desktop_protocol_probes",
   "apk_execution_performed": false,
   "phone_runtime_test_performed": false,
   "bike_test_performed": false,

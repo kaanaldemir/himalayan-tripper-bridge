@@ -9,6 +9,10 @@ __pycache__/
 *.class
 *.zip
 *.log
+*.p12
+*.jks
+*.pem
+*.key
 local.properties
 .idea/
 .gradle/
